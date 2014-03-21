@@ -13,6 +13,7 @@ int main(int argc,char ** argv)
   double error;
   char mode[20];
   int compress=0;
+
   static struct option long_options[] =
     {
       {"mode", required_argument, NULL, 'm'},
