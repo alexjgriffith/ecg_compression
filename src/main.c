@@ -6,13 +6,14 @@
 #include <getopt.h>
 #include "../headers/common_functions.h"
 #include "../headers/fan.h"
-
+#include "../headers/entropy.h"
 int main(int argc,char ** argv)
 {
   int ch;
   double error;
   char mode[20];
   int compress=0;
+
   static struct option long_options[] =
     {
       {"mode", required_argument, NULL, 'm'},
@@ -43,8 +44,6 @@ int main(int argc,char ** argv)
 	}
     }
 
-
-  
   if(!strcmp(mode,"fan"))
     {
     if(compress==0)
@@ -59,6 +58,18 @@ int main(int argc,char ** argv)
     if(compress==1)
       fan_decompress();
     }
+
+  if (!strcmp(mode,"dpcm"))
+    {
+      dpcm_compress_2nd();
+    }
+
+  if (!strcmp(mode,"make-huffman"))
+    {
+      printf("huffman chossen\n");
+      build_huffman_code(200);
+    }
+
   return 0;
 }
 

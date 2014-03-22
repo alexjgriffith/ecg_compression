@@ -20,7 +20,8 @@ def load_data(filename):
 def plot_model(f_m):
   plt.close('all')
   for i in f_m:
-    plt.plot(i)
+   plt.plot(i[0:2000])
+  #plt.plot(i[0:2000],'o')
   #plt.ylabel('DB(Z)')
   #plt.xlabel('Frequency')
   #plt.xscale('log')
