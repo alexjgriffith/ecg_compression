@@ -39,8 +39,7 @@ int fan_compress(double error)
   output[0]=(int)v[2];
   //output[0]= modulate(v[2] , 12,-1,1);
   output[1]= j+1;
-  fprintf(stdout,"%04d%04d",output[0],output[1]);
-  
+  fprintf(stdout,"%04d%04d",output[0],output[1]);  
   return 0;
 }
 

@@ -16,9 +16,11 @@ void split_token(char trim[256], char del[],  int i)
 int load_from_stdin(double * v)
 {
   char buffer[256];
+  char c[3];
+  strcpy(c,"\n");
   if(fgets(buffer,256,stdin))
     {
-    split_token(buffer,"/n",0);
+    split_token(buffer,c,0);
     sscanf(buffer,"%lf",v);
     return 1;
     }

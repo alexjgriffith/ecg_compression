@@ -12,11 +12,19 @@ int dpcm_compress_2nd();
 
 typedef struct huffman_code huffman_code;
 
-int dcpm_decompress ();
+int dpcm_decompress ();
 
-void huffman_aux_function(huffman_code point,int key);
+void huffman_aux_function_fixed(huffman_code point,int key, int depth);
+
+void huffman_aux_function_variable(huffman_code point,char key[12], int depth);
+
+int delta_code();
 
 int build_huffman_code(int length);
+
+int huffman_encode(char file[20]);
+
+int huffman_decode(char file[20]);
 
 #endif
 
