@@ -1,13 +1,4 @@
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include <time.h>
-#include <stdlib.h>
-#include <getopt.h>
-#include "../headers/common_functions.h"
-#include "../headers/fan.h"
-#include "../headers/entropy.h"
-#include "../headers/spline.h"
+#include "../headers/main.h"
 int main(int argc,char ** argv)
 {
   int ch;
@@ -85,9 +76,14 @@ int main(int argc,char ** argv)
     {
       huffman_decode(huffman_file);
     }
-  if(!strcmp(mode,"spline"))
+  if(!strcmp(mode,"spline")&& compress==0)
     {
-      pick_knots(3,4);
+      pick_knots(3,3);
+    }
+  if(!strcmp(mode,"spline") && compress==1)
+    {
+      //printf("spline decompression\n");
+      spline_decompression(25);
     }
   return 0;
 }

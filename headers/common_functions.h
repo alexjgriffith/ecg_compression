@@ -15,4 +15,11 @@ int load_from_stdin(double * v);
 int modulate(double float_data , int size,double min,double max);
 
 double demodulate(int int_data , int size,double min,double max);
+
+double mean(double * data, int start, int stop);
+
+double max(double * data, int start, int stop);
+
+int  max_abs_location(double * data, int start, int stop);
+
 #endif

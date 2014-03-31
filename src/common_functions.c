@@ -42,3 +42,39 @@ double demodulate(int int_data , int size,double min,double max)
   return float_data;
 }
 
+double mean(double * data, int start, int stop)
+{
+  int i;
+  double sum=0;
+  for(i=start;i<stop; i++)
+    sum=(sum+data[i]);
+  return sum/(stop-start);
+}
+
+double max(double * data, int start, int stop)
+{
+  int i;
+double  max=data[start];
+ for(i=start;i<stop;i++)
+   {
+     if(data[i]>max)
+       max=data[i];
+   }
+ return max;
+}
+
+int max_abs_location(double * data, int start, int stop)
+{
+  int i;
+  int location;
+double  max=data[start];
+ for(i=start;i<stop;i++)
+   {
+     if(data[i]>max|| data[i]<-1*max)
+       {
+	 max=data[i];
+	 location=i;
+       }
+   }
+ return location;
+}

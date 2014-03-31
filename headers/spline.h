@@ -15,6 +15,7 @@ double * curv1(int n,int* x, double* y,double sigma);
 
 double curv2(int n,int * x,double *y,double sigma,double *yp, int t);
 
+int spline_decompression(double sigma);
 int spline_test(double sigma);
 
 #endif

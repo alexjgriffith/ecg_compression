@@ -60,5 +60,21 @@ python/graphing-compression.py temp_c~
 awk -F "\t" 'NR<20000{print $3}' data/aami.txt |./bin/ecg_compression.o -m dpcm |awk 'NR>1 {print $0}'>temp_b~
 python/graphing-compression.py temp_b~ 1
 }
+./make.sh
 
-awk -F "\t" 'NR<20000{print $3}' data/aami.txt |./bin/ecg_compression.o -m spline
+cd ../
+for a in `grep -w line ecg_compression/data/cbd_files.data|awk '{print $2}'| head -20 | tail -10 `
+do
+echo $a
+rdsamp -r $a | awk -F "\t" '{print $2-$3}' |sed 's/\ //g' >ecg_compression/temp.data
+cd ecg_compression/
+
+awk -F "\t" 'NR<2000{print $1}' temp.data > temp_a~
+awk -F "\t" 'NR<2000{print $1}' temp.data |./bin/ecg_compression.o -m spline > temp~
+cat temp~ | ./bin/ecg_compression.o -m spline -d > temp_b~
+
+paste temp_a~ temp_b~ >temp_c~
+wc -l temp_a~
+wc -l temp_b~
+python/graphing-compression.py temp_c~
+done

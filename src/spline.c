@@ -15,7 +15,7 @@ double analyze_2_order(double d2_buffer[10000],double d1_buffer[10000],int  leng
 	loc=i;
 	}    
     }
-  if(loc!=0 && loc!= length)
+  if(loc!=start && loc< length-1)
     {
       return loc;
     }
@@ -29,7 +29,7 @@ double analyze_2_order(double d2_buffer[10000],double d1_buffer[10000],int  leng
 	loc=i;
 	}    
     }
-  if(loc!=0 && loc!=length)
+  if(loc!=start && loc<length-1)
     {
       return loc;
     }
@@ -43,7 +43,7 @@ double analyze_2_order(double d2_buffer[10000],double d1_buffer[10000],int  leng
 	loc=i;
 	}    
     }
-  if(loc!=0 && loc!=length)
+  if(loc!=start && loc<length-1)
     {
       return loc;
     }
@@ -57,7 +57,7 @@ double analyze_2_order(double d2_buffer[10000],double d1_buffer[10000],int  leng
 	loc=i;
 	}    
     }
-  if(loc!=0 && loc!=length)
+  if(loc!=start && loc<length-1)
     {
       return loc;
     }
@@ -67,8 +67,8 @@ double analyze_2_order(double d2_buffer[10000],double d1_buffer[10000],int  leng
 int pick_knots(int threshold,int window)
 {
   double v[20];
-  double d1_buffer[1000];
-  double d2_buffer[1000];
+  double d1_buffer[10000];
+  double d2_buffer[10000];
   double temp;
   double state=0;
   int i=0;
@@ -78,30 +78,29 @@ int pick_knots(int threshold,int window)
   int tt=0;
   int kk=0;
   int last_location=0;
-  for(i=0;i<window-2;i++)
+  for(i=0;i<window-1;i++)
     {
     load_from_stdin(&v[i]);
-    fprintf(stdout,"%04d\t%lf\n",kk,v[i]);
+    fprintf(stdout,"%04d\t%lf\n",1,v[i]);
+    kk++;
     }
+  last_location=kk;
   i=0;
   while ( load_from_stdin(&v[window-1]))
     {
-      temp = -v[0]-v[window/2-1]+2*v[window-1];
-      if(temp!=0)
-	{
-	if (state==0)
-	  state=temp;
+      temp = -v[0]-v[window-1]+2*v[window/2];
 	if (temp<0 && state<0)
 	  {
 	  d1_buffer[i]=temp;
-	  d2_buffer[i]=v[window-1];
+	  d2_buffer[i]=v[window/2];
+	  state=temp;
 	  i++;
 	  }
 	else if (temp>0 && state >0)
 	  {
-	  d1_buffer[i]=temp;
-	  d2_buffer[i]=v[window-1];
-	  i++;
+	    d1_buffer[i]=temp;
+	    d2_buffer[i]=v[window/2];
+	    i++;
 	  }
 	else
 	  {
@@ -112,63 +111,71 @@ int pick_knots(int threshold,int window)
 		  {
 		    j=analyze_2_order(d2_buffer,d1_buffer,t+threshold,t);
 		    if(j!=0)
-		      {
-			fprintf(stdout,"%04d\t%lf\ta\n",kk-i+t+j,d2_buffer[j+t]);
+		      {						  
+			fprintf(stdout,"%04d\t%lf\n",kk-i+j-last_location,d2_buffer[i-j]);
+			last_location=kk-i+j;
 		      }
 		    t=t+threshold;
 		  }
 		j=analyze_2_order(d2_buffer,d1_buffer,i,t);
 		    if(j!=0)
 		      {
-			fprintf(stdout,"%04d\t%lf\tb\n",kk-i+t+j,d2_buffer[i-j]);
+			fprintf(stdout,"%04d\t%lf\n",kk-i+j-last_location,d2_buffer[i-j]);
+			last_location=kk-i+j;
 		      }
 		    k=0;
 	      }
 	    memset(d2_buffer,0,sizeof(d2_buffer));
 	    memset(d1_buffer,0,sizeof(d1_buffer));
-	    state=0;
+	    state=temp;
 	    i=0;
 	  }
-	}
-      else
-	{
-	  if(i>threshold)
-	      {
-		t=0;
-		while(i>t+threshold)
-		  {
-		    j=analyze_2_order(d2_buffer,d1_buffer,t+threshold,t);
-		    if(j!=0)
-		      {
-			fprintf(stdout,"%04d\t%lf\n",kk-i+t+j,d2_buffer[t+j]);
-			last_location=kk;
-		      }
-		    t=t+threshold;
-		  }
-		j=analyze_2_order(d2_buffer,d1_buffer,i,t);
-		    if(j!=0)
-		      {
-			fprintf(stdout,"%04d\t%lf\n",kk-i+t+j,d2_buffer[i-j]);
-			last_location=kk;
-		      }
-		    k=0;
-	      }
-	  memset(d2_buffer,0,sizeof(d2_buffer));
-	  memset(d1_buffer,0,sizeof(d1_buffer));
-	  state=0;
-	  i=0;
-	}
-      for(tt=0;tt<window-2;tt++)
+	
+      for(tt=0;tt<window-1;tt++)
 	{
 	  v[tt]=v[tt+1];
 	}
       kk++;
       k++;
     }
-  fprintf(stdout,"%04d\t%lf\n",kk,v[2]);
+  fprintf(stdout,"%04d\t%lf\n",kk-last_location,v[2]);
   return 0;
 }
 
+int spline_decompression(double sigma)
+{
+  int *x= (int *)calloc(100000,sizeof(int));
+  double * y = (double *)calloc(100000,sizeof(double));
+  double * yp = (double *)calloc(100000,sizeof(double));
+  char buffer[256];
+  char buffer_t[256];
+  int i=0;
+  int temp;
+  while(fgets(buffer,256,stdin))
+    {
+      sscanf(buffer,"%d\t%lf",&temp,&y[i]);
+      if (i>0)
+	x[i]=x[i-1]+temp;
+      else
+	x[i]=temp;
+      if (i>100000-1)
+	{
+	  printf("error: file is to long\n");
+	  exit(0);
+	}
+      //printf("%d\t%lf\n",x[i],y[i]);
+      i++;
+      //split_token(buffer,"\t", 1)
+    }
+  yp=curv1(11,x,y,sigma);
+  int j=0;
+  for(j=0;j<x[i-1];j=j+1)
+  {
+    printf("%lf\n",curv2(i-1,x,y,sigma,yp,j));
+  }
+      
+  return 0;
+}
 int spline_test(double sigma)
 {
   int i;
